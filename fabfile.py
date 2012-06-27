@@ -4,11 +4,11 @@ from fabric.contrib.files import append
 def jenkins():
     run("wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -")
     run("sudo sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'")
-    run("sudo apt-get update")
-    run("sudo apt-get -y install jenkins")
+    run("sudo apt-get -qq update")
+    run("sudo apt-get -qq install jenkins")
 
 def forward_port():
-    run("sudo apt-get -y install nginx")
+    run("sudo apt-get -qq install nginx")
     run("sudo rm /etc/nginx/sites-available/default")
     conf = """\
 upstream app_server {
