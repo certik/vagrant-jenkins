@@ -1,5 +1,12 @@
 from fabric.api import env, local, run
 
+def jenkins():
+    run("wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -")
+    run("sudo sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'")
+    run("sudo apt-get update")
+    run("sudo apt-get -y install jenkins")
+
+
 def vagrant():
     vc = _get_vagrant_config()
     # change from the default user to 'vagrant'
