@@ -9,4 +9,6 @@ First create the Vagrant box::
 Then bring it up and install Jenkins::
 
     vagrant up
-    fab vagrant jenkins
+    fab vagrant jenkins forward_port
+
+Access Jenkins at: http://localhost:8080/
