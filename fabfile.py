@@ -3,9 +3,9 @@ from fabric.contrib.files import append
 
 def jenkins():
     run("wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -")
-    run("sudo sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'")
-    run("sudo apt-get -qq update")
-    run("sudo apt-get -qq install jenkins")
+    sudo("sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'")
+    sudo("apt-get -qq update")
+    sudo("apt-get -qq install jenkins")
 
     jenkins_install_plugins()
 
@@ -17,8 +17,8 @@ def jenkins_install_plugins():
 
 
 def forward_port():
-    run("sudo apt-get -qq install nginx")
-    run("sudo rm /etc/nginx/sites-available/default")
+    sudo("apt-get -qq install nginx")
+    sudo("rm /etc/nginx/sites-available/default")
     conf = """\
 upstream app_server {
     server 127.0.0.1:8080 fail_timeout=0;
@@ -43,8 +43,8 @@ server {
 """
 
     append("/etc/nginx/sites-available/jenkins", conf, use_sudo=True)
-    run("sudo ln -s /etc/nginx/sites-available/jenkins /etc/nginx/sites-enabled")
-    run("sudo service nginx restart")
+    sudo("ln -s /etc/nginx/sites-available/jenkins /etc/nginx/sites-enabled")
+    sudo("service nginx restart")
 
 
 def vagrant():
