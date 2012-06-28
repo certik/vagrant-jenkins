@@ -1,3 +1,11 @@
+About
+=====
+
+We use Fabric (http://fabfile.org/) to fully automate Jenkins
+(http://jenkins-ci.org/) install. We currently install into an Ubuntu virtual
+image managed by Vagrant (http://vagrantup.com/), but any Ubuntu server should
+work.
+
 How to install Jenkins
 ======================
 
