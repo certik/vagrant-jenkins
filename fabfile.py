@@ -10,9 +10,16 @@ def jenkins():
     jenkins_install_plugins()
 
 def jenkins_install_plugins():
+    # Install new plugins
     with cd("/var/lib/jenkins/plugins"):
         sudo("wget --no-check-certificate http://updates.jenkins-ci.org/latest/git.hpi")
         sudo("wget --no-check-certificate http://updates.jenkins-ci.org/latest/github.hpi")
+
+    # Configure the "git" plugin:
+    sudo('su -c "git config --global user.email \"jenkins@xxx.x\"" -s /bin/bash jenkins')
+    sudo('su -c "git config --global user.name \"jenkins\"" -s /bin/bash jenkins')
+
+    # Restart Jenkins to register the new plugins
     sudo("/etc/init.d/jenkins restart")
 
 
