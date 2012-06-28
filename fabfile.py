@@ -47,6 +47,12 @@ def jenkins_add_sympy():
     # Restart Jenkins to register the new job
     _jenkins_restart()
 
+def jenkins_add_numpy():
+    _jenkins_add_job("NumPy", "https://github.com/numpy/numpy", "master",
+            "python setup.py install")
+    # Restart Jenkins to register the new job
+    _jenkins_restart()
+
 def _jenkins_add_job(job_name, github_url, git_branch, build_command):
     template = """\
 <?xml version='1.0' encoding='UTF-8'?>
