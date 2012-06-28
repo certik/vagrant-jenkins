@@ -28,7 +28,9 @@ def jenkins_install_plugins():
     sudo('su -c "git config --global user.name \"jenkins\"" -s /bin/bash jenkins')
 
     # Restart Jenkins to register the new plugins
-    sudo("/etc/init.d/jenkins restart")
+    # Important: one has to use pty=False, otherwise the init script doesn't
+    # work (http://docs.fabfile.org/en/1.4.1/faq.html#init-scripts-don-t-work)
+    sudo("/etc/init.d/jenkins restart", pty=False)
 
 
 def forward_port():
