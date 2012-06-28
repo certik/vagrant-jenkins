@@ -19,7 +19,11 @@ def jenkins():
 def jenkins_install_plugins():
     # Install new plugins
     with cd("/var/lib/jenkins/plugins"):
+        # git
         sudo("wget -nv --no-check-certificate http://updates.jenkins-ci.org/latest/git.hpi")
+
+        # github (depends on github-api)
+        sudo("wget -nv --no-check-certificate http://updates.jenkins-ci.org/latest/github-api.hpi")
         sudo("wget -nv --no-check-certificate http://updates.jenkins-ci.org/latest/github.hpi")
 
     # Configure the "git" plugin:
