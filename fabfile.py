@@ -26,6 +26,9 @@ def jenkins_install_plugins():
         sudo("wget -nv --no-check-certificate http://updates.jenkins-ci.org/latest/github-api.hpi")
         sudo("wget -nv --no-check-certificate http://updates.jenkins-ci.org/latest/github.hpi")
 
+        # python
+        sudo("wget -nv --no-check-certificate http://updates.jenkins-ci.org/latest/python.hpi")
+
     # Configure the "git" plugin:
     sudo("apt-get -qq install git-core")
     sudo('su -c "git config --global user.email \"jenkins@xxx.x\"" -s /bin/bash jenkins')
