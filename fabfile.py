@@ -1,4 +1,4 @@
-from fabric.api import env, local, run
+from fabric.api import env, local, run, sudo, cd
 from fabric.contrib.files import append
 
 def jenkins():
@@ -6,6 +6,15 @@ def jenkins():
     run("sudo sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'")
     run("sudo apt-get -qq update")
     run("sudo apt-get -qq install jenkins")
+
+    jenkins_install_plugins()
+
+def jenkins_install_plugins():
+    with cd("/var/lib/jenkins/plugins"):
+        sudo("wget --no-check-certificate http://updates.jenkins-ci.org/latest/git.hpi")
+        sudo("wget --no-check-certificate http://updates.jenkins-ci.org/latest/github.hpi")
+    sudo("/etc/init.d/jenkins restart")
+
 
 def forward_port():
     run("sudo apt-get -qq install nginx")
