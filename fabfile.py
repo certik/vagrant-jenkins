@@ -1,4 +1,4 @@
-from fabric.api import env, local, run, sudo, cd
+from fabric.api import env, local, run, sudo, cd, hide
 from fabric.contrib.files import append, exists
 
 def jenkins():
@@ -34,10 +34,90 @@ def jenkins_install_plugins():
     sudo('su -c "git config --global user.name \"jenkins\"" -s /bin/bash jenkins')
 
     # Restart Jenkins to register the new plugins
+    _jenkins_restart()
+
+def _jenkins_restart():
     # Important: one has to use pty=False, otherwise the init script doesn't
     # work (http://docs.fabfile.org/en/1.4.1/faq.html#init-scripts-don-t-work)
     sudo("/etc/init.d/jenkins restart", pty=False)
 
+def jenkins_add_sympy():
+    _jenkins_add_job("SymPy", "https://github.com/sympy/sympy", "master",
+            "bin/test sympy/core")
+    # Restart Jenkins to register the new job
+    _jenkins_restart()
+
+def _jenkins_add_job(job_name, github_url, git_branch, build_command):
+    template = """\
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty>
+      <projectUrl>%(github_url)s</projectUrl>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <name></name>
+        <refspec></refspec>
+        <url>%(github_url)s</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>%(git_branch)s</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <disableSubmodules>false</disableSubmodules>
+    <recursiveSubmodules>false</recursiveSubmodules>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <authorOrCommitter>false</authorOrCommitter>
+    <clean>false</clean>
+    <wipeOutWorkspace>false</wipeOutWorkspace>
+    <pruneBranches>false</pruneBranches>
+    <remotePoll>false</remotePoll>
+    <ignoreNotifyCommit>false</ignoreNotifyCommit>
+    <buildChooser class="hudson.plugins.git.util.DefaultBuildChooser"/>
+    <gitTool>Default</gitTool>
+    <submoduleCfg class="list"/>
+    <relativeTargetDir></relativeTargetDir>
+    <reference></reference>
+    <excludedRegions></excludedRegions>
+    <excludedUsers></excludedUsers>
+    <gitConfigName></gitConfigName>
+    <gitConfigEmail></gitConfigEmail>
+    <skipTag>false</skipTag>
+    <includedRegions></includedRegions>
+    <scmName></scmName>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector"/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>%(build_command)s</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
+"""
+    conf = template % {"github_url": github_url,
+            "git_branch": git_branch,
+            "build_command": build_command}
+    sudo("mkdir /var/lib/jenkins/jobs/%s" % job_name, user="jenkins")
+    with cd("/var/lib/jenkins/jobs/%s" % job_name):
+        with hide('running', 'stdout'):
+            sudo("touch config.xml", user="jenkins")
+            append("config.xml", conf, use_sudo=True)
 
 def forward_port():
     sudo("apt-get -qq install nginx")
