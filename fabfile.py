@@ -1,9 +1,8 @@
-from time import sleep
-
 from fabric.api import env, local, run, sudo, cd
 from fabric.contrib.files import append, exists
 
 def jenkins():
+    from time import sleep
     run("wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -")
     sudo("sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'")
     sudo("apt-get -qq update")
