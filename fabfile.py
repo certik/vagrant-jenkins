@@ -1,11 +1,18 @@
+from time import sleep
+
 from fabric.api import env, local, run, sudo, cd
-from fabric.contrib.files import append
+from fabric.contrib.files import append, exists
 
 def jenkins():
     run("wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -")
     sudo("sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'")
     sudo("apt-get -qq update")
     sudo("apt-get -qq install jenkins")
+    # Jenkins takes a while to start in the background, so we need to check
+    # that the proper directories were created before proceeding:
+    while not exists("/var/lib/jenkins/plugins"):
+        print "Waiting for Jenkins to start..."
+        sleep(1)
 
     jenkins_install_plugins()
 
